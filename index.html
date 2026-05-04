@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caroline's 69-Account Vision Board</title>
+    <script type="text/javascript" src="https://identity.netlify.com/v1/netlify-identity-widget.js"></script>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #ffffff;
+            overflow-x: hidden;
+            padding: 20px;
+        }
+
+        /* Auth gate styles */
+        #login-gate {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            text-align: center;
+        }
+        #login-gate h1 {
+            font-size: 2.5em;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        #login-gate p {
+            font-size: 1.2em;
+            opacity: 0.8;
+            margin-bottom: 30px;
+        }
+        #login-btn {
+            padding: 15px 40px;
+            font-size: 1.2em;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 10px 30px rgba(99, 102, 241, 0.4);
+        }
+        #login-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 15px 40px rgba(139, 92, 246, 0.6);
+        }
+        #access-denied {
+            display: none;
+            color: #ef4444;
+            margin-top: 20px;
+            font-size: 1.1em;
+        }
+        #vision-board { display: none; }
+
+        /* Vision board styles */
+        .hero {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border-radius: 20px;
+            margin-bottom: 40px;
+            box-shadow: 0 20px 60px rgba(99, 102, 241, 0.4);
+            animation: pulse 3s ease-in-out infinite;
+            position: relative;
+            overflow: hidden;
+        }
+        @keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.02); } }
+        .hero h1 { font-size: 3.5em; margin-bottom: 10px; text-shadow: 0 4px 20px rgba(0,0,0,0.3); }
+        .hero .subtitle { font-size: 1.5em; opacity: 0.9; margin-top: 10px; }
+        .countdown { font-size: 2em; color: #fbbf24; margin-top: 20px; font-weight: bold; }
+        .logout-bar { text-align: right; margin-bottom: 20px; }
+        .logout-btn {
+            padding: 8px 20px; background: rgba(255,255,255,0.1); color: #fff;
+            border: 1px solid rgba(255,255,255,0.3); border-radius: 8px; cursor: pointer;
+            font-size: 0.9em; transition: all 0.3s ease;
+        }
+        .logout-btn:hover { background: rgba(255,255,255,0.2); }
+        .stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 40px; }
+        .stat-card {
+            background: rgba(255, 255, 255, 0.05);
+            border: 2px solid rgba(139, 92, 246, 0.3);
+            border-radius: 15px;
+            padding: 30px;
+            text-align: center;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+        .stat-card:hover { transform: translateY(-10px); border-color: #8b5cf6; box-shadow: 0 15px 40px rgba(139, 92, 246, 0.4); }
+        .stat-value {
+            font-size: 3em; font-weight: bold;
+            background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .stat-label { font-size: 1.1em; margin-top: 10px; opacity: 0.8; }
+        .timeline-container { position: relative; max-width: 1200px; margin: 0 auto 60px; }
+        .timeline-title {
+            text-align: center; font-size: 2.5em; margin-bottom: 40px;
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+        }
+        .timeline { position: relative; padding: 20px 0; }
+        .timeline::before {
+            content: ''; position: absolute; left: 50%; top: 0; bottom: 0; width: 4px;
+            background: linear-gradient(180deg, #6366f1 0%, #8b5cf6 100%); transform: translateX(-50%);
+        }
+        .milestone { position: relative; margin-bottom: 60px; opacity: 0; animation: slideIn 0.6s ease forwards; }
+        .milestone:nth-child(odd) { padding-right: 50%; text-align: right; }
+        .milestone:nth-child(even) { padding-left: 50%; text-align: left; }
+        @keyframes slideIn { from { opacity: 0; transform: translateY(30px); } to { opacity: 1; transform: translateY(0); } }
+        .milestone:nth-child(1) { animation-delay: 0.1s; }
+        .milestone:nth-child(2) { animation-delay: 0.3s; }
+        .milestone:nth-child(3) { animation-delay: 0.5s; }
+        .milestone:nth-child(4) { animation-delay: 0.7s; }
+        .milestone:nth-child(5) { animation-delay: 0.9s; }
+        .milestone:nth-child(6) { animation-delay: 1.1s; }
+        .milestone-content {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.2) 0%, rgba(139, 92, 246, 0.2) 100%);
+            border: 2px solid rgba(139, 92, 246, 0.5); border-radius: 15px; padding: 25px;
+            display: inline-block; min-width: 300px; backdrop-filter: blur(10px); transition: all 0.3s ease;
+        }
+        .milestone-content:hover { transform: scale(1.05); border-color: #8b5cf6; box-shadow: 0 10px 30px rgba(139, 92, 246, 0.4); }
+        .milestone-date { font-size: 1.3em; color: #fbbf24; font-weight: bold; margin-bottom: 10px; }
+        .milestone-accounts { font-size: 2.5em; font-weight: bold; color: #10b981; margin: 10px 0; }
+        .milestone-details { font-size: 1.1em; opacity: 0.9; line-height: 1.6; }
+        .milestone-icon {
+            position: absolute; left: 50%; top: 20px; transform: translateX(-50%);
+            width: 60px; height: 60px; background: linear-gradient(135deg, #6366f1 0%, #8b5cf6 100%);
+            border: 5px solid #0a0e27; border-radius: 50%; display: flex; align-items: center;
+            justify-content: center; font-size: 1.8em; z-index: 10; animation: iconPulse 2s ease-in-out infinite;
+        }
+        @keyframes iconPulse { 0%, 100% { box-shadow: 0 0 20px rgba(99, 102, 241, 0.5); } 50% { box-shadow: 0 0 40px rgba(139, 92, 246, 0.8); } }
+        .debt-elimination {
+            background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+            padding: 40px; border-radius: 20px; margin-bottom: 40px; text-align: center;
+        }
+        .debt-item {
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 20px; margin: 15px 0; background: rgba(0, 0, 0, 0.3);
+            border-radius: 10px; border-left: 5px solid #10b981;
+        }
+        .debt-name { font-size: 1.3em; font-weight: bold; }
+        .debt-amount { font-size: 1.5em; color: #fbbf24; }
+        .celebration {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            padding: 60px; border-radius: 20px; text-align: center; margin-top: 40px;
+            box-shadow: 0 20px 60px rgba(16, 185, 129, 0.4);
+        }
+        .celebration h2 { font-size: 3em; margin-bottom: 20px; }
+        .celebration-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; margin-top: 30px; }
+        .celebration-stat { background: rgba(255, 255, 255, 0.1); padding: 20px; border-radius: 10px; }
+        .celebration-stat-value { font-size: 2.5em; font-weight: bold; color: #fbbf24; }
+        .tree-visual { background: rgba(0, 0, 0, 0.3); padding: 40px; border-radius: 20px; margin: 40px 0; font-family: 'Courier New', monospace; overflow-x: auto; }
+        .tree-visual pre { color: #10b981; font-size: 1.1em; line-height: 1.8; }
+        .highlight { color: #fbbf24; font-weight: bold; }
+        @media (max-width: 768px) {
+            .hero h1 { font-size: 2em; }
+            .timeline::before { left: 20px; }
+            .milestone { padding: 0 0 0 60px !important; text-align: left !important; }
+            .milestone-icon { left: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <!-- AUTH GATE -->
+    <div id="login-gate">
+        <h1>EMPIRE VISION BOARD</h1>
+        <p>Private access only. Sign in with Google to continue.</p>
+        <button id="login-btn" onclick="netlifyIdentity.open('login')">Sign In with Google</button>
+        <div id="access-denied">Access denied. This board is private.</div>
+    </div>
+
+    <!-- VISION BOARD (hidden until authenticated) -->
+    <div id="vision-board">
+        <div class="logout-bar">
+            <span id="user-email" style="opacity:0.6; margin-right: 15px;"></span>
+            <button class="logout-btn" onclick="netlifyIdentity.logout()">Sign Out</button>
+        </div>
+
+        <div class="hero">
+            <h1>CAROLINE'S 69-ACCOUNT EMPIRE</h1>
+            <div class="subtitle">From 1 Account to Financial Freedom</div>
+            <div class="countdown">ALL DEBT CLEARED IN 25 DAYS</div>
+        </div>
+
+        <div class="stats-grid">
+            <div class="stat-card"><div class="stat-value">69</div><div class="stat-label">FUNDED ACCOUNTS</div></div>
+            <div class="stat-card"><div class="stat-value">$63.9K</div><div class="stat-label">DAILY CAPACITY</div></div>
+            <div class="stat-card"><div class="stat-value">$1.34M</div><div class="stat-label">MONTHLY CAPACITY</div></div>
+            <div class="stat-card"><div class="stat-value">25 DAYS</div><div class="stat-label">TO FULL SCALE</div></div>
+        </div>
+
+        <div class="timeline-container">
+            <h2 class="timeline-title">THE EXPONENTIAL JOURNEY</h2>
+            <div class="timeline">
+                <div class="milestone">
+                    <div class="milestone-icon">&#127793;</div>
+                    <div class="milestone-content">
+                        <div class="milestone-date">MAY 3 (Day 1)</div>
+                        <div class="milestone-accounts">1F + 2E</div>
+                        <div class="milestone-details">Starting position<br><strong>The seed is planted</strong></div>
+                    </div>
+                </div>
+                <div class="milestone">
+                    <div class="milestone-icon">&#9889;</div>
+                    <div class="milestone-content">
+                        <div class="milestone-date">MAY 7 (Day 5)</div>
+                        <div class="milestone-accounts">3 FUNDED</div>
+                        <div class="milestone-details">First 2 evals pass<br>First payout: <strong>$4,630</strong><br>Buy 4 new evals &rarr; 3F + 4E</div>
+                    </div>
+                </div>
+                <div class="milestone">
+                    <div class="milestone-icon">&#128293;</div>
+                    <div class="milestone-content">
+                        <div class="milestone-date">MAY 12 (Day 10)</div>
+                        <div class="milestone-accounts">7 FUNDED</div>
+                        <div class="milestone-details">4 more evals pass<br>Payout: <strong>$13,890</strong><br>Buy 14 new evals &rarr; 7F + 14E</div>
+                    </div>
+                </div>
+                <div class="milestone">
+                    <div class="milestone-icon">&#128142;</div>
+                    <div class="milestone-content">
+                        <div class="milestone-date">MAY 17 (Day 15)</div>
+                        <div class="milestone-accounts">21 FUNDED</div>
+                        <div class="milestone-details">14 more evals pass<br>Payout: <strong>$32,410</strong><br>Buy 32 new evals &rarr; 21F + 32E</div>
+                    </div>
+                </div>
+                <div class="milestone">
+                    <div class="milestone-icon">&#128081;</div>
+                    <div class="milestone-content">
+                        <div class="milestone-date">MAY 22 (Day 20)</div>
+                        <div class="milestone-accounts">53 FUNDED</div>
+                        <div class="milestone-details">32 more evals pass<br>Payout: <strong>$97,230</strong><br>Buy 16 final evals &rarr; 53F + 16E</div>
+                    </div>
+                </div>
+                <div class="milestone">
+                    <div class="milestone-icon">&#127919;</div>
+                    <div class="milestone-content">
+                        <div class="milestone-date">MAY 27 (Day 25)</div>
+                        <div class="milestone-accounts">69 FUNDED &#10003;</div>
+                        <div class="milestone-details"><strong>TARGET REACHED!</strong><br>Final 16 evals pass<br>FULL CAPACITY UNLOCKED</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="tree-visual">
+            <pre>
+<span class="highlight">THE COMPOUND ENGINE</span>
+
+Day 1:   <span class="highlight">1F</span> &rarr; $4,630 payout
+&darr;
+Day 5:   <span class="highlight">3F</span> &rarr; $13,890 payout
+&darr;
+Day 10:  <span class="highlight">7F</span> &rarr; $32,410 payout
+&darr;
+Day 15:  <span class="highlight">21F</span> &rarr; $97,230 payout
+&darr;
+Day 20:  <span class="highlight">53F</span> &rarr; $245,000 payout
+&darr;
+Day 25:  <span class="highlight">69F &#10003; EMPIRE COMPLETE</span>
+
+Each payout funds the next wave.
+Each wave is BIGGER than the last.
+This is the POWER of exponential growth.
+            </pre>
+        </div>
+
+        <div class="debt-elimination">
+            <h2 style="font-size: 2.5em; margin-bottom: 30px;">DEBT ELIMINATION</h2>
+            <div style="max-width: 800px; margin: 0 auto;">
+                <div class="debt-item"><div class="debt-name">Discover CC</div><div class="debt-amount">$8,522</div></div>
+                <div class="debt-item"><div class="debt-name">Cenlar HELOC</div><div class="debt-amount">$49,264</div></div>
+                <div class="debt-item"><div class="debt-name">Toyota Auto</div><div class="debt-amount">$47,709</div></div>
+                <div class="debt-item"><div class="debt-name">Student Loan</div><div class="debt-amount">$6,997</div></div>
+                <div class="debt-item" style="border-left-color: #fbbf24; border-left-width: 8px;"><div class="debt-name">MORTGAGE</div><div class="debt-amount">$202,000</div></div>
+                <div style="margin-top: 40px; padding-top: 30px; border-top: 3px solid rgba(255,255,255,0.3);">
+                    <div style="font-size: 2em; color: #fbbf24; font-weight: bold;">TOTAL: $314,492</div>
+                    <div style="font-size: 1.8em; margin-top: 20px; color: #10b981;">CLEARED BY MAY 31 &#10003;</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="celebration">
+            <h2>DECEMBER 31, 2026</h2>
+            <p style="font-size: 1.5em; margin-top: 20px;">Where you'll be standing:</p>
+            <div class="celebration-stats">
+                <div class="celebration-stat"><div class="celebration-stat-value">$0</div><div>TOTAL DEBT</div></div>
+                <div class="celebration-stat"><div class="celebration-stat-value">69</div><div>FUNDED ACCOUNTS</div></div>
+                <div class="celebration-stat"><div class="celebration-stat-value">$10.2M</div><div>CASH IN HAND</div></div>
+                <div class="celebration-stat"><div class="celebration-stat-value">243</div><div>DAYS TO FREEDOM</div></div>
+            </div>
+            <div style="margin-top: 50px; font-size: 1.8em; line-height: 1.8;">
+                <p><strong>"I am a woman who keeps the money she makes."</strong></p>
+                <p style="margin-top: 20px;">Every held trade. Every followed rule.</p>
+                <p><strong>EVIDENCE COLLECTED.</strong></p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Sparkle effect
+        function startSparkles() {
+            setInterval(() => {
+                const hero = document.querySelector('.hero');
+                if (!hero) return;
+                const sparkle = document.createElement('div');
+                sparkle.style.position = 'absolute';
+                sparkle.style.width = '4px';
+                sparkle.style.height = '4px';
+                sparkle.style.background = '#fbbf24';
+                sparkle.style.borderRadius = '50%';
+                sparkle.style.left = Math.random() * 100 + '%';
+                sparkle.style.top = Math.random() * 100 + '%';
+                sparkle.style.animation = 'sparkle 1s ease-out forwards';
+                hero.appendChild(sparkle);
+                setTimeout(() => sparkle.remove(), 1000);
+            }, 300);
+        }
+        const style = document.createElement('style');
+        style.textContent = `@keyframes sparkle { 0% { opacity: 0; transform: scale(0); } 50% { opacity: 1; } 100% { opacity: 0; transform: scale(2); } }`;
+        document.head.appendChild(style);
+
+        // Allowed email
+        const ALLOWED_EMAIL = 'soudgiec@gmail.com';
+
+        function showBoard() {
+            document.getElementById('login-gate').style.display = 'none';
+            document.getElementById('vision-board').style.display = 'block';
+            startSparkles();
+        }
+
+        function showLoginGate() {
+            document.getElementById('login-gate').style.display = 'flex';
+            document.getElementById('vision-board').style.display = 'none';
+        }
+
+        // Check if already logged in
+        const currentUser = netlifyIdentity.currentUser();
+        if (currentUser && currentUser.email === ALLOWED_EMAIL) {
+            showBoard();
+            document.getElementById('user-email').textContent = currentUser.email;
+        }
+
+        // On login
+        netlifyIdentity.on('login', user => {
+            if (user.email === ALLOWED_EMAIL) {
+                showBoard();
+                document.getElementById('user-email').textContent = user.email;
+                netlifyIdentity.close();
+            } else {
+                // Not authorized - show denied message and log them out
+                document.getElementById('access-denied').style.display = 'block';
+                netlifyIdentity.logout();
+            }
+        });
+
+        // On logout
+        netlifyIdentity.on('logout', () => {
+            showLoginGate();
+            document.getElementById('access-denied').style.display = 'none';
+        });
+    </script>
+</body>
+</html>
